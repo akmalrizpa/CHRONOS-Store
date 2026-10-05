@@ -1,6 +1,16 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_SETTINGS } from "@/data/shop";
-import type { Order, OrderEvent, OrderStatus, ProductMeta, Review, StoreSettings } from "./types";
+import type {
+  Customer,
+  CustomerRole,
+  Order,
+  OrderEvent,
+  OrderStatus,
+  ProductMeta,
+  Review,
+  StoreSettings,
+  StoreUser,
+} from "./types";
 
 /**
  * Persistence for the store's own data (orders, reviews, promo flags, settings).
@@ -34,6 +44,7 @@ type Memory = {
   productMeta: Map<string, ProductMeta>;
   settings: Partial<StoreSettings>;
   proofs: Map<string, { bytes: ArrayBuffer; contentType: string }>;
+  customers: Map<string, Customer>;
 };
 
 const globalForStore = globalThis as unknown as { __chronosStore?: Memory };
@@ -46,6 +57,7 @@ function memory(): Memory {
       productMeta: new Map(),
       settings: {},
       proofs: new Map(),
+      customers: new Map(),
     };
   }
   return globalForStore.__chronosStore;
@@ -372,6 +384,111 @@ export async function saveProductMeta(value: string, patch: Partial<ProductMeta>
       },
       { onConflict: "product_value" },
     );
+}
+
+export async function deleteProductMeta(value: string): Promise<void> {
+  if (!hasDatabase) {
+    memory().productMeta.delete(value);
+    return;
+  }
+  await db().from("product_meta").delete().eq("product_value", value);
+}
+
+/* --------------------------------- customers ------------------------------- */
+
+type CustomerRow = {
+  discord_id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  role: CustomerRole;
+  first_seen: string;
+  last_seen: string;
+};
+
+function toCustomer(row: CustomerRow): Customer {
+  return {
+    discordId: row.discord_id,
+    username: row.username,
+    displayName: row.display_name || row.username,
+    avatarUrl: row.avatar_url,
+    role: row.role === "admin" ? "admin" : "customer",
+    firstSeen: row.first_seen,
+    lastSeen: row.last_seen,
+  };
+}
+
+/** Called on every sign-in, so the customer list stays fresh by itself. */
+export async function upsertCustomer(user: StoreUser): Promise<void> {
+  const now = new Date().toISOString();
+
+  if (!hasDatabase) {
+    const store = memory();
+    const existing = store.customers.get(user.id);
+    store.customers.set(user.id, {
+      discordId: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      role: existing?.role ?? "customer",
+      firstSeen: existing?.firstSeen ?? now,
+      lastSeen: now,
+    });
+    return;
+  }
+
+  await db()
+    .from("customers")
+    .upsert(
+      {
+        discord_id: user.id,
+        username: user.username,
+        display_name: user.displayName,
+        avatar_url: user.avatarUrl,
+        last_seen: now,
+      },
+      { onConflict: "discord_id", ignoreDuplicates: false },
+    );
+}
+
+export async function listCustomers(limit = 200): Promise<Customer[]> {
+  if (!hasDatabase) {
+    return [...memory().customers.values()].sort((a, b) => b.lastSeen.localeCompare(a.lastSeen)).slice(0, limit);
+  }
+
+  const { data, error } = await db()
+    .from("customers")
+    .select("*")
+    .order("last_seen", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) return [];
+  return (data as CustomerRow[]).map(toCustomer);
+}
+
+export async function getCustomer(discordId: string): Promise<Customer | null> {
+  if (!hasDatabase) return memory().customers.get(discordId) ?? null;
+
+  const { data } = await db().from("customers").select("*").eq("discord_id", discordId).maybeSingle();
+  return data ? toCustomer(data as CustomerRow) : null;
+}
+
+export async function setCustomerRole(discordId: string, role: CustomerRole): Promise<void> {
+  if (!hasDatabase) {
+    const store = memory();
+    const existing = store.customers.get(discordId);
+    if (existing) store.customers.set(discordId, { ...existing, role });
+    return;
+  }
+
+  await db().from("customers").update({ role }).eq("discord_id", discordId);
+}
+
+export async function countCustomers(): Promise<number> {
+  if (!hasDatabase) return memory().customers.size;
+
+  const { count } = await db().from("customers").select("discord_id", { count: "exact", head: true });
+  return count ?? 0;
 }
 
 /* --------------------------------- settings -------------------------------- */

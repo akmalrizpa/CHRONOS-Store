@@ -21,13 +21,43 @@ No bot code change is needed: the store uses the same DASH API and the same prod
 
 Products live in the bot (`/add-product`, or Products & Categories in the dashboard) with
 `label`, `value`, `price`, `category`, `requiresKey` and optionally `roleId` + `days`.
-The store only adds two things in its own database:
+The admin area edits all of that straight through the bot's DASH API, so a save here is
+the same change the Discord ticket flow sells — no second catalog to keep in sync.
+Two things live only in the store's own database:
 
 - **promo label** — a badge on the product card (no price maths; the bot has no discount field)
 - **featured** — puts the product in the Featured block on the home page
 
 Durations come from `days` (0 = permanent). One product = one duration, so "Cheat X — 7 days"
 and "Cheat X — 30 days" are two products in the bot.
+
+## Admin area
+
+`/admin` is staff-only and split into pages:
+
+| Page | What it does |
+| --- | --- |
+| `/admin` | counts per status, delivered value, product/customer/review totals, latest orders, bot connection |
+| `/admin/orders` | payment proofs, one-click key release, reject with a reason, internal notes |
+| `/admin/products` | one container per product: edit name/price/category/duration/auto-role/promo/featured, delete (two-step), plus full category CRUD |
+| `/admin/customers` | everyone who signed in, with order count and spend, and promote/demote to admin |
+| `/admin/settings` | QRIS image, payment note, support hours, contact links, promo banner, shop open/closed |
+
+Products and categories go to the bot; promo, featured, settings and customers stay in
+Supabase. Role and category pickers read the real Discord guild through `GET /guilds/:id/meta`,
+so nobody types a Discord ID by hand. The bot enforces its own limits (25 products, 25
+categories, `[a-zA-Z0-9_-]` IDs) and those messages are shown to staff verbatim.
+
+## Who is staff
+
+Two sources, both checked on every request:
+
+1. `STORE_ADMIN_DISCORD_IDS` — comma-separated IDs. Always admin, so a fresh deployment can
+   never lock you out.
+2. `role = 'admin'` on the customer row, set from `/admin/customers`.
+
+Customers sign in with Discord and see only their own orders (`/orders`, `/account`).
+
 
 ## Setup
 
@@ -48,7 +78,7 @@ clicked through before the bot is connected.
 
 1. Buyer picks a product → signs in with Discord → order is created (`pending`).
 2. Buyer uploads the payment proof on the order page → status `review`.
-3. Staff opens `/admin`, checks the proof, and either:
+3. Staff opens `/admin/orders`, checks the proof, and either:
    - types a key (for account-based products), or leaves the field empty and lets the store
      generate one (`XXXXX-XXXXX-XXXXX`), then hits **Deliver key**, or
    - rejects the order with a reason the buyer sees.
@@ -57,11 +87,6 @@ clicked through before the bot is connected.
 
 Every failure from the bot (unknown product, buyer not in the server, role missing, no
 auto-role configured) is shown to staff verbatim instead of disappearing.
-
-## Who is staff
-
-`STORE_ADMIN_DISCORD_IDS` — comma-separated Discord user IDs with access to `/admin`.
-It is read live from the env on every request, so removing an ID takes effect immediately.
 
 ## Scripts
 

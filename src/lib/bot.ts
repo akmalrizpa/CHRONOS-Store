@@ -104,3 +104,82 @@ export function deliverKey(input: { userId: string; key: string; productValue: s
 export function isGuildMember(userId: string) {
   return dashFetch<{ id?: string; username?: string }>(`/guilds/${GUILD_ID}/member/${userId}`);
 }
+
+export type BotRole = { id: string; name: string; color: string; position: number };
+export type BotChannel = { id: string; name: string; type: string };
+export type BotMeta = { guild: BotGuild; channels: BotChannel[]; roles: BotRole[] };
+
+/** Real channels + roles of the guild, so the admin forms offer pickers instead of raw IDs. */
+export function fetchMeta() {
+  if (!GUILD_ID) return Promise.resolve<BotResult<BotMeta>>({ ok: false, error: "CHRONOS_GUILD_ID is not set" });
+  return dashFetch<BotMeta>(`/guilds/${GUILD_ID}/meta`);
+}
+
+export type ProductInput = {
+  label: string;
+  value: string;
+  price: string;
+  category: string;
+  requiresKey: boolean;
+  roleId?: string;
+  days?: number;
+  actorId?: string;
+};
+
+export function createProduct(input: ProductInput) {
+  return dashFetch<{ ok: boolean; product: unknown }>(`/guilds/${GUILD_ID}/products`, {
+    method: "POST",
+    body: JSON.stringify({ ...input, actor: input.actorId ? { id: input.actorId } : undefined }),
+  });
+}
+
+export function updateProduct(productValue: string, patch: Partial<ProductInput>) {
+  return dashFetch<{ ok: boolean; product: unknown }>(
+    `/guilds/${GUILD_ID}/products/${encodeURIComponent(productValue)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({ ...patch, actor: patch.actorId ? { id: patch.actorId } : undefined }),
+    },
+  );
+}
+
+export function deleteProduct(productValue: string, actorId?: string) {
+  return dashFetch<{ ok: boolean }>(`/guilds/${GUILD_ID}/products/${encodeURIComponent(productValue)}`, {
+    method: "DELETE",
+    body: JSON.stringify({ actor: actorId ? { id: actorId } : undefined }),
+  });
+}
+
+export function createCategory(input: {
+  label: string;
+  id: string;
+  emoji: string;
+  style: string;
+  requiresKey: boolean;
+  actorId?: string;
+}) {
+  return dashFetch<{ ok: boolean; category: unknown }>(`/guilds/${GUILD_ID}/categories`, {
+    method: "POST",
+    body: JSON.stringify({ ...input, actor: input.actorId ? { id: input.actorId } : undefined }),
+  });
+}
+
+export function updateCategory(
+  categoryId: string,
+  patch: { label?: string; emoji?: string; style?: string; requiresKey?: boolean; actorId?: string },
+) {
+  return dashFetch<{ ok: boolean; category: unknown }>(
+    `/guilds/${GUILD_ID}/categories/${encodeURIComponent(categoryId)}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({ ...patch, actor: patch.actorId ? { id: patch.actorId } : undefined }),
+    },
+  );
+}
+
+export function deleteCategory(categoryId: string, actorId?: string) {
+  return dashFetch<{ ok: boolean; migratedCount?: number }>(
+    `/guilds/${GUILD_ID}/categories/${encodeURIComponent(categoryId)}`,
+    { method: "DELETE", body: JSON.stringify({ actor: actorId ? { id: actorId } : undefined }) },
+  );
+}

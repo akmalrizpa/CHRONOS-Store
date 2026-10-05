@@ -7,6 +7,7 @@ import {
   exchangeCode,
   fetchDiscordUser,
 } from "@/lib/auth";
+import { upsertCustomer } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,9 @@ export async function GET(request: Request) {
 
   const user = await fetchDiscordUser(token.access_token);
   if (!user) return fail("user");
+
+  // Keeps /admin/customers populated without anyone having to order first.
+  await upsertCustomer(user);
 
   const response = NextResponse.redirect(new URL(target, request.url));
   response.cookies.set(SESSION_COOKIE, encodeSession(user), {

@@ -4,7 +4,7 @@ import CopyButton from "@/components/CopyButton";
 import OrderStatusBadge from "@/components/OrderStatusBadge";
 import { uploadProofAction } from "@/app/actions/orders";
 import { submitReviewAction } from "@/app/actions/reviews";
-import { getSession, isStaff } from "@/lib/auth";
+import { getSession, isStaffUser } from "@/lib/auth";
 import { getLocale } from "@/lib/locale";
 import { createTranslator } from "@/i18n/dictionary";
 import { getOrder, getReviewByOrder, getSettings } from "@/lib/store";
@@ -40,7 +40,7 @@ export default async function OrderPage({
   if (!order) notFound();
 
   const user = await getSession();
-  const staff = Boolean(user && isStaff(user.id));
+  const staff = Boolean(user && (await isStaffUser(user.id)));
   const owner = Boolean(user && order.buyerDiscordId === user.id);
 
   if (!owner && !staff) {
@@ -79,7 +79,7 @@ export default async function OrderPage({
           href={staff ? "/admin?tab=orders" : "/orders"}
           className="font-mono text-xs text-muted transition hover:text-paper"
         >
-          ← {staff ? t("admin.tabOrders") : t("order.backOrders")}
+          ← {staff ? t("admin.navOrders") : t("order.backOrders")}
         </Link>
       </div>
 

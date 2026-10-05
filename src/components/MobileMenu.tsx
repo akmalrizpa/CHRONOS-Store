@@ -13,7 +13,15 @@ type Props = {
   links: NavLink[];
   locale: Locale;
   user: { name: string; isStaff: boolean } | null;
-  labels: { orders: string; admin: string; login: string; logout: string; open: string; close: string };
+  labels: {
+    orders: string;
+    account: string;
+    admin: string;
+    login: string;
+    logout: string;
+    open: string;
+    close: string;
+  };
 };
 
 export default function MobileMenu({ links, locale, user, labels }: Props) {
@@ -59,6 +67,9 @@ export default function MobileMenu({ links, locale, user, labels }: Props) {
               <>
                 <Link href="/orders" className="rounded-card px-2 py-2.5 text-sm font-semibold text-muted">
                   {labels.orders}
+                </Link>
+                <Link href="/account" className="rounded-card px-2 py-2.5 text-sm font-semibold text-muted">
+                  {labels.account}
                 </Link>
                 {user.isStaff && (
                   <Link href="/admin" className="rounded-card px-2 py-2.5 text-sm font-semibold text-muted">

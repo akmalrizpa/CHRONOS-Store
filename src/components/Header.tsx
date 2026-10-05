@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession, isStaff } from "@/lib/auth";
+import { getSession, isStaffUser } from "@/lib/auth";
 import { createTranslator } from "@/i18n/dictionary";
 import type { Locale } from "@/lib/locale";
 import { logoutAction } from "@/app/actions/session";
@@ -12,7 +12,7 @@ const STORE_NAME = process.env.STORE_NAME || "CHRONOS Store";
 export default async function Header({ locale }: { locale: Locale }) {
   const { t } = createTranslator(locale);
   const user = await getSession();
-  const staff = Boolean(user && isStaff(user.id));
+  const staff = Boolean(user && (await isStaffUser(user.id)));
 
   const links = [
     { href: "/", label: t("nav.home") },
@@ -48,6 +48,9 @@ export default async function Header({ locale }: { locale: Locale }) {
               <Link href="/orders" className="text-sm font-semibold text-muted transition hover:text-paper">
                 {t("nav.orders")}
               </Link>
+              <Link href="/account" className="text-sm font-semibold text-muted transition hover:text-paper">
+                {t("nav.account")}
+              </Link>
               {staff && (
                 <Link href="/admin" className="text-sm font-semibold text-accent transition hover:text-accent-dark">
                   {t("nav.admin")}
@@ -79,6 +82,7 @@ export default async function Header({ locale }: { locale: Locale }) {
           user={user ? { name: user.displayName, isStaff: staff } : null}
           labels={{
             orders: t("nav.orders"),
+            account: t("nav.account"),
             admin: t("nav.admin"),
             login: t("nav.login"),
             logout: t("nav.logout"),

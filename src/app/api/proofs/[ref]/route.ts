@@ -1,4 +1,4 @@
-import { getSession, isStaff } from "@/lib/auth";
+import { getSession, isStaffUser } from "@/lib/auth";
 import { getOrder, readProof } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ref
 
   if (!order || !order.proofPath) return new Response("Not found", { status: 404 });
 
-  const allowed = Boolean(user && (order.buyerDiscordId === user.id || isStaff(user.id)));
+  const staff = user ? await isStaffUser(user.id) : false;
+  const allowed = Boolean(user && (order.buyerDiscordId === user.id || staff));
   if (!allowed) return new Response("Forbidden", { status: 403 });
 
   const file = await readProof(order.proofPath);

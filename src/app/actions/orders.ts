@@ -95,9 +95,9 @@ export async function uploadProofAction(formData: FormData) {
 export async function deliverOrderAction(formData: FormData) {
   const staff = await getStaffSession();
   const ref = String(formData.get("ref") ?? "").trim();
-  const adminPath = `/admin?tab=orders&ref=${encodeURIComponent(ref)}`;
+  const adminPath = `/admin/orders?ref=${encodeURIComponent(ref)}`;
 
-  if (!staff) redirect("/login?next=/admin");
+  if (!staff) redirect("/login?next=/admin/orders");
   if (!isBotConfigured) redirect(`${adminPath}&result=bot`);
 
   const order = await getOrder(ref);
@@ -139,9 +139,9 @@ export async function rejectOrderAction(formData: FormData) {
   const staff = await getStaffSession();
   const ref = String(formData.get("ref") ?? "").trim();
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 300);
-  const adminPath = `/admin?tab=orders&ref=${encodeURIComponent(ref)}`;
+  const adminPath = `/admin/orders?ref=${encodeURIComponent(ref)}`;
 
-  if (!staff) redirect("/login?next=/admin");
+  if (!staff) redirect("/login?next=/admin/orders");
 
   const order = await getOrder(ref);
   if (!order) redirect(`${adminPath}&result=missing`);
@@ -161,9 +161,9 @@ export async function saveStaffNoteAction(formData: FormData) {
   const staff = await getStaffSession();
   const ref = String(formData.get("ref") ?? "").trim();
   const note = String(formData.get("staffNote") ?? "").trim().slice(0, 400);
-  const adminPath = `/admin?tab=orders&ref=${encodeURIComponent(ref)}`;
+  const adminPath = `/admin/orders?ref=${encodeURIComponent(ref)}`;
 
-  if (!staff) redirect("/login?next=/admin");
+  if (!staff) redirect("/login?next=/admin/orders");
 
   const order = await getOrder(ref);
   if (!order) redirect(`${adminPath}&result=missing`);

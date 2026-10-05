@@ -93,6 +93,19 @@ export type ProductMeta = {
   sortOrder: number;
 };
 
+export type CustomerRole = "customer" | "admin";
+
+/** One row per Discord account that has signed in. */
+export type Customer = {
+  discordId: string;
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+  role: CustomerRole;
+  firstSeen: string;
+  lastSeen: string;
+};
+
 export type StoreSettings = {
   qrisImageUrl: string;
   paymentNote: string;

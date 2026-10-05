@@ -45,6 +45,23 @@ create table if not exists reviews (
   created_at timestamptz not null default now()
 );
 
+-- One row per Discord account that has signed in. `role` is what the store's
+-- admin area checks: 'customer' sees only their own orders, 'admin' gets the
+-- whole /admin area. IDs in STORE_ADMIN_DISCORD_IDS always count as admin too,
+-- so an empty table (or a fresh deployment) can never lock you out.
+create table if not exists customers (
+  discord_id text primary key,
+  username text not null default '',
+  display_name text not null default '',
+  avatar_url text,
+  role text not null default 'customer' check (role in ('customer', 'admin')),
+  first_seen timestamptz not null default now(),
+  last_seen timestamptz not null default now()
+);
+
+create index if not exists customers_role_idx on customers (role);
+create index if not exists customers_seen_idx on customers (last_seen desc);
+
 -- Promo badges and the "featured" flag live here because the bot has no promo
 -- field: its product shape is label / value / price / category / requiresKey /
 -- roleId / days, and the store must not pretend otherwise.
@@ -68,6 +85,7 @@ alter table orders enable row level security;
 alter table reviews enable row level security;
 alter table product_meta enable row level security;
 alter table settings enable row level security;
+alter table customers enable row level security;
 
 drop policy if exists "reviews are readable by everyone" on reviews;
 create policy "reviews are readable by everyone" on reviews for select using (true);

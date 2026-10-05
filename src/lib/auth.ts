@@ -1,5 +1,6 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { getCustomer } from "./store";
 import type { StoreUser } from "./types";
 
 /**
@@ -24,9 +25,21 @@ const STAFF_IDS = (process.env.STORE_ADMIN_DISCORD_IDS ?? "")
   .map((id) => id.trim())
   .filter(Boolean);
 
-/** Read live from the env on every call, so removing a staff ID takes effect at once. */
-export function isStaff(userId: string | null | undefined): boolean {
+/** IDs listed in STORE_ADMIN_DISCORD_IDS — always staff, even with an empty database. */
+export function isEnvStaff(userId: string | null | undefined): boolean {
   return Boolean(userId) && STAFF_IDS.includes(String(userId));
+}
+
+/**
+ * Staff = the env list OR role 'admin' on the customer row (set from
+ * /admin/customers). The env list is checked first so a fresh deployment —
+ * where nobody has signed in yet — can always reach the admin area.
+ */
+export async function isStaffUser(userId: string | null | undefined): Promise<boolean> {
+  if (!userId) return false;
+  if (isEnvStaff(userId)) return true;
+  const customer = await getCustomer(String(userId));
+  return customer?.role === "admin";
 }
 
 export function staffIds(): string[] {
@@ -134,7 +147,8 @@ export async function getSession(): Promise<StoreUser | null> {
 
 export async function getStaffSession(): Promise<StoreUser | null> {
   const user = await getSession();
-  return user && isStaff(user.id) ? user : null;
+  if (!user) return null;
+  return (await isStaffUser(user.id)) ? user : null;
 }
 
 /** Session-only helper for the language switcher cookie. */
