@@ -1,0 +1,287 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "shop": "Toko",
+    "reviews": "Review",
+    "status": "Lacak order",
+    "faq": "FAQ",
+    "login": "Masuk",
+    "logout": "Keluar",
+    "orders": "Order saya",
+    "admin": "Staff",
+    "openMenu": "Menu",
+    "closeMenu": "Tutup",
+    "language": "Bahasa"
+  },
+  "home": {
+    "eyebrow": "Dijual dan dikirim lewat Discord",
+    "title": "Akses premium, dikirim langsung ke akun Discord kamu.",
+    "lead": "Pilih produk, bayar, lalu staff melepas key-nya. Bot menyimpan key, memberi role yang sesuai, mengirim key ke DM kamu, dan mencabut role-nya saat waktunya habis.",
+    "ctaShop": "Lihat toko",
+    "ctaDiscord": "Masuk Discord",
+    "quality": "Status toko",
+    "catalogLive": "{count} produk dari config bot",
+    "catalogDemo": "Katalog demo — bot belum tersambung",
+    "openShopNote": "Harga dan durasi diambil langsung dari config bot, jadi yang kamu lihat di sini sama dengan yang dijual lewat alur ticket."
+  },
+  "popular": {
+    "title": "Produk unggulan",
+    "lead": "Produk yang ditandai staff sebagai unggulan.",
+    "empty": "Belum ada yang diunggulkan — semua produk ada di halaman toko.",
+    "all": "Lihat semua produk"
+  },
+  "why": {
+    "title": "Kenapa beli di sini",
+    "lead": "Toko ini pintu depannya; Discord dan bot yang mengerjakan pengirimannya.",
+    "delivery": {
+      "title": "Key masuk ke DM Discord",
+      "body": "Satu aksi menyimpan key, memberi role produk, dan mengirim key ke DM pembeli — nggak ada yang copy-paste key secara manual."
+    },
+    "duration": {
+      "title": "Akses yang berhenti sendiri",
+      "body": "Setiap produk punya durasi. Habis masa berlakunya, bot mencabut role-nya; kalau beli lagi, waktunya ditambah bukan diganti."
+    },
+    "support": {
+      "title": "Bantuan di tempat yang sama",
+      "body": "Role yang belum masuk, akun salah, dan pertanyaan pembayaran ditangani di server Discord — tempat yang sama dengan pembelianmu."
+    }
+  },
+  "stats": {
+    "products": "Produk terdaftar",
+    "delivered": "Key terkirim",
+    "members": "Anggota Discord",
+    "reviews": "Review pembeli"
+  },
+  "shop": {
+    "title": "Toko",
+    "lead": "Harga dan durasi dibaca dari config bot. Login pakai Discord waktu checkout.",
+    "search": "Cari produk",
+    "searchLabel": "Cari produk",
+    "searchCta": "Cari",
+    "reset": "Reset filter",
+    "all": "Semua kategori",
+    "showing": "{shown} dari {total} produk",
+    "empty": "Nggak ada yang cocok dengan \"{query}\". Coba kata lain atau pilih kategori.",
+    "duration": "Durasi",
+    "category": "Kategori",
+    "buy": "Beli",
+    "detail": "Detail",
+    "promo": "Promo",
+    "noRole": "Produk ini belum punya auto-role di bot — staff mengirim key-nya manual."
+  },
+  "product": {
+    "back": "Kembali ke toko",
+    "price": "Harga",
+    "duration": "Masa aktif",
+    "category": "Kategori",
+    "deliveryTitle": "Cara kamu mendapatkannya",
+    "delivery1": "Bayar dan unggah bukti pembayaran di halaman order.",
+    "delivery2": "Staff memeriksa pembayarannya, lalu melepas key-nya.",
+    "delivery3": "Bot mengirim key ke DM Discord kamu dan memberi role sesuai durasi di atas.",
+    "buy": "Beli produk ini",
+    "loginNote": "Login Discord dilakukan saat checkout — key-nya terikat ke akun itu.",
+    "notFound": "Produk itu sudah nggak ada di katalog.",
+    "roleNote": "Auto-role untuk produk ini sudah diatur.",
+    "noRoleNote": "Produk ini belum punya auto-role di bot, jadi staff mengirim key-nya manual."
+  },
+  "checkout": {
+    "title": "Konfirmasi order",
+    "lead": "Cek detailnya, lalu buat order. Instruksi pembayaran muncul setelahnya.",
+    "loginTitle": "Masuk dulu",
+    "loginBody": "Bot mengirim key ke sebuah akun Discord, jadi kami perlu tahu akunmu yang mana. Setelah login, riwayat order juga bisa dilihat lagi.",
+    "loginCta": "Masuk pakai Discord",
+    "product": "Produk",
+    "price": "Harga",
+    "duration": "Masa aktif",
+    "contact": "Kontak (tag Discord, WhatsApp, atau email)",
+    "contactHint": "Dipakai cuma kalau staff perlu menghubungimu soal order ini.",
+    "note": "Catatan untuk staff",
+    "noteHint": "Kalau ada yang perlu mereka tahu — nama akun, kode promo yang kamu dapat, dan sejenisnya.",
+    "submit": "Buat order",
+    "closed": "Toko sedang tutup. Masuk ke Discord dan tanya staff kapan buka lagi.",
+    "paymentTitle": "Pembayaran",
+    "gatewaySoon": "Checkout otomatis (Midtrans / Tripay) belum dinyalakan — order dibayar lewat QRIS atau transfer bank dan diperiksa staff."
+  },
+  "order": {
+    "title": "Order",
+    "ref": "Nomor order",
+    "createdAt": "Dibuat",
+    "statusLabel": "Status",
+    "status": {
+      "pending": "Menunggu pembayaran",
+      "review": "Bukti pembayaran masuk — menunggu staff",
+      "delivered": "Sudah dikirim",
+      "rejected": "Pembayaran nggak bisa diverifikasi"
+    },
+    "payTitle": "Bayar dan unggah buktinya",
+    "qrisTitle": "QRIS",
+    "qrisMissing": "Staff belum mengunggah gambar QRIS — minta detail pembayarannya di Discord.",
+    "transferTitle": "Transfer bank",
+    "transferMissing": "Detail banknya belum diisi — tanya staff di Discord.",
+    "paymentNote": "Catatan pembayaran dari staff",
+    "uploadLabel": "Unggah bukti pembayaran",
+    "uploadHint": "Screenshot transfer atau halaman konfirmasi QRIS. PNG, JPG, WebP, atau PDF, maksimal 6 MB.",
+    "uploadCta": "Kirim bukti",
+    "uploadDone": "Bukti diterima. Staff akan memeriksanya lalu melepas key-nya.",
+    "proofTitle": "Bukti pembayaran",
+    "keyTitle": "Key kamu",
+    "keyHint": "Bot juga sudah mengirim key ini ke DM Discord kamu, dan role-nya sudah aktif sekarang.",
+    "copy": "Salin",
+    "copied": "Tersalin",
+    "waitingTitle": "Menunggu staff",
+    "waitingBody": "Bukti pembayaranmu sudah masuk. Verifikasi biasanya dilakukan di jam support.",
+    "rejectedBody": "Staff nggak bisa memverifikasi pembayaran ini.",
+    "supportCta": "Tanya di Discord",
+    "staffNote": "Pesan dari staff",
+    "backOrders": "Semua order saya",
+    "track": "Lacak order"
+  },
+  "orders": {
+    "title": "Order saya",
+    "lead": "Semua pembelian yang pakai akun Discord ini.",
+    "empty": "Belum ada order. Tokonya cuma sekali klik.",
+    "browse": "Buka toko",
+    "detail": "Buka order"
+  },
+  "statusPage": {
+    "title": "Lacak order",
+    "lead": "Masukkan nomor order yang kamu dapat saat checkout. Key-nya tetap disembunyikan sampai kamu login sebagai pembelinya.",
+    "label": "Nomor order",
+    "submit": "Cek status",
+    "notFound": "Nggak ada order dengan nomor itu. Cek lagi penulisannya — formatnya seperti CS-XXXXXX.",
+    "signInToSeeKey": "Order ini punyamu? Masuk pakai Discord untuk melihat key-nya."
+  },
+  "reviews": {
+    "title": "Review pembeli",
+    "lead": "Ditulis oleh pembeli dari order mereka sendiri yang sudah dikirim — nggak ada yang dipalsukan di sini.",
+    "empty": "Belum ada review. Review muncul begitu ada pembeli yang menilai ordernya.",
+    "rating": "Penilaian",
+    "stars": "{rating} dari 5",
+    "from": "oleh {name}",
+    "backToOrder": "Kembali ke order",
+    "formTitle": "Tulis review",
+    "formHint": "Satu order bisa dinilai sekali. Langsung muncul di halaman review.",
+    "formBody": "Menurutmu bagaimana?",
+    "formSubmit": "Kirim review",
+    "formDone": "Terima kasih — review-nya sudah tampil.",
+    "formExists": "Kamu sudah menilai order ini."
+  },
+  "faq": {
+    "title": "Pertanyaan yang sering masuk",
+    "lead": "Jawaban langsung soal pembayaran, pengiriman, dan durasi.",
+    "items": [
+      {
+        "q": "Berapa lama pengirimannya?",
+        "a": "Staff memverifikasi pembayaranmu lalu melepas key-nya, biasanya di jam support. Key-nya masuk ke DM Discord kamu dan role produknya langsung diberikan di saat yang sama."
+      },
+      {
+        "q": "Harus ada di server Discord-nya?",
+        "a": "Iya. Bot cuma bisa memberi role dan mengirim key ke anggota server, jadi masuklah pakai akun Discord yang mau diberi akses."
+      },
+      {
+        "q": "Bayarnya di mana?",
+        "a": "Buka halaman order setelah checkout. Di situ ada kode QRIS atau detail banknya, plus kolom untuk mengunggah bukti pembayaran. Staff memeriksa dari sana."
+      },
+      {
+        "q": "Key-nya nggak masuk.",
+        "a": "Cek DM Discord dulu — kadang Discord menyembunyikan pesan bot di \"Message requests\". Lalu buka halaman order: kalau statusnya masih menunggu, unggah bukti pembayaranmu; kalau statusnya sudah dikirim, tag staff di server."
+      },
+      {
+        "q": "Aksesnya bisa dipakai di akun lain?",
+        "a": "Nggak bisa. Key-nya terikat ke akun Discord yang membeli — role dan hitungan waktunya cuma mengikuti akun itu."
+      },
+      {
+        "q": "Produknya berhenti jalan, atau saya salah bayar.",
+        "a": "Sampaikan di server Discord selama masa aktifmu masih jalan. Refund diputuskan staff satu per satu; toko ini nggak mengembalikan uang sendiri."
+      }
+    ]
+  },
+  "footer": {
+    "support": "Jam support",
+    "payments": "Metode pembayaran",
+    "community": "Komunitas",
+    "shopLinks": "Toko",
+    "note": "Katalog dan role-nya datang dari bot CHRONOS. Order dan review-nya ada di toko ini."
+  },
+  "login": {
+    "title": "Masuk",
+    "lead": "Login Discord cuma memakai scope identify — toko ini nggak pernah meminta sandi dan nggak pernah posting apa pun atas namamu.",
+    "cta": "Lanjut dengan Discord",
+    "notConfigured": "Login Discord belum dikonfigurasi di deployment ini. Isi DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, SESSION_SECRET, dan PUBLIC_ORIGIN, lalu restart.",
+    "signedInAs": "Masuk sebagai {name}",
+    "goShopping": "Ke toko",
+    "goOrders": "Order saya"
+  },
+  "admin": {
+    "title": "Staff",
+    "lead": "Order, tanda promo, dan pengaturan toko. Pengiriman memanggil bot, jadi key, role, DM, dan masa berlakunya diurus di sana.",
+    "notStaff": "Halaman ini cuma untuk akun staff. Minta admin menambahkan ID Discord kamu ke STORE_ADMIN_DISCORD_IDS.",
+    "tabOrders": "Order",
+    "tabPromos": "Promo & unggulan",
+    "tabSettings": "Pengaturan",
+    "filterAll": "Semua",
+    "noOrders": "Belum ada order di filter ini.",
+    "buyer": "Pembeli",
+    "product": "Produk",
+    "amount": "Jumlah",
+    "contact": "Kontak",
+    "note": "Catatan pembeli",
+    "proof": "Bukti",
+    "noProof": "Belum ada bukti diunggah",
+    "openProof": "Buka bukti",
+    "deliverTitle": "Lepas key",
+    "keyLabel": "Key (kosongkan kalau mau dibuat otomatis)",
+    "keyPlaceholder": "XXXXX-XXXXX-XXXXX",
+    "generate": "Buat otomatis",
+    "deliver": "Kirim key",
+    "reject": "Tolak",
+    "rejectReason": "Alasan yang dilihat pembeli",
+    "staffNoteLabel": "Catatan internal",
+    "saveNote": "Simpan catatan",
+    "deliveredBy": "Dilepas oleh {name}",
+    "resultOk": "Key terkirim — role diberikan, DM pembeli terkirim, masa berlaku dijadwalkan.",
+    "resultPartial": "Key tersimpan, tapi bot memberi peringatan: {warning}",
+    "deliveryFailed": "Pengiriman gagal: {error}",
+    "botMissing": "Bot belum tersambung (DASH_API_URL / DASH_API_TOKEN / CHRONOS_GUILD_ID). Pengiriman butuh itu.",
+    "promoTitle": "Label promo dan unggulan",
+    "promoLead": "Label promo tampil sebagai badge oranye di produk. Produk unggulan muncul di blok Produk unggulan di beranda. Dua-duanya nggak mengubah harga.",
+    "promoLabel": "Label promo",
+    "promoPlaceholder": "misal PROMO, -20%",
+    "featured": "Unggulan",
+    "saveProduct": "Simpan",
+    "settingsTitle": "Pengaturan toko",
+    "qrisImageUrl": "URL gambar QRIS",
+    "qrisHint": "URL gambar publik (Supabase Storage atau CDN apa pun). Tampil di setiap order yang menunggu pembayaran.",
+    "paymentNote": "Catatan pembayaran tambahan",
+    "paymentNoteHint": "Tampil di bawah kode QRIS, misal nama pemilik rekening.",
+    "supportHours": "Jam support",
+    "whatsappUrl": "Link WhatsApp",
+    "telegramUrl": "Link Telegram",
+    "discordInviteUrl": "Link undangan Discord",
+    "currencyLabel": "Label mata uang",
+    "currencyHint": "Cuma dipakai untuk total dan statistik — harga produk tetap persis seperti di bot.",
+    "storeOpen": "Toko buka",
+    "storeOpenHint": "Ditutup = checkout menolak order baru.",
+    "promoBanner": "Banner promo di beranda",
+    "promoBannerHint": "Satu baris di atas halaman beranda. Kosongkan kalau mau disembunyikan.",
+    "saveSettings": "Simpan pengaturan",
+    "saved": "Tersimpan.",
+    "statsOrders": "{count} order",
+    "statsRevenue": "{amount} terkirim"
+  },
+  "common": {
+    "backHome": "Kembali ke beranda",
+    "backShop": "Kembali ke toko",
+    "loading": "Memuat…",
+    "demoCatalog": "Katalog demo",
+    "demoCatalogBody": "DASH_API_URL dan CHRONOS_GUILD_ID belum diisi, jadi toko menampilkan produk demo. Arahkan keduanya ke bot untuk melihat katalog aslinya.",
+    "botOnline": "Bot online · v{version}",
+    "botOffline": "Bot nggak bisa dihubungi",
+    "signInNeeded": "Masuk pakai Discord untuk lanjut",
+    "close": "Tutup",
+    "optional": "opsional",
+    "notFoundTitle": "Nggak ada apa-apa di sini",
+    "notFoundBody": "Halamannya nggak ada. Toko tempat yang enak buat mulai lagi.",
+    "support": "Bantuan"
+  }
+}

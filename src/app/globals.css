@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  --color-ink: #0e1013;
+  --color-panel: #16191e;
+  --color-panel-2: #1d2127;
+  --color-line: #262b33;
+  --color-paper: #f4f2ee;
+  --color-muted: #99a0aa;
+  --color-accent: #d98b2b;
+  --color-accent-dark: #b06f1c;
+  --color-accent-soft: #2a2115;
+  --color-ok: #3f9e6b;
+  --color-ok-soft: #16261d;
+  --color-danger: #d2564a;
+  --color-danger-soft: #2a1917;
+
+  --radius-card: 10px;
+  --shadow-lift: 0 26px 60px -40px rgba(0, 0, 0, 0.95);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

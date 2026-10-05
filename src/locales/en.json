@@ -1,0 +1,287 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "reviews": "Reviews",
+    "status": "Track order",
+    "faq": "FAQ",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "orders": "My orders",
+    "admin": "Staff",
+    "openMenu": "Menu",
+    "closeMenu": "Close",
+    "language": "Language"
+  },
+  "home": {
+    "eyebrow": "Sold and delivered through Discord",
+    "title": "Premium access, delivered to your own Discord account.",
+    "lead": "Pick a product, pay, and a staff member releases the key. The bot stores it, grants the matching role, DMs the key to you and takes the role back when your time runs out.",
+    "ctaShop": "Browse the shop",
+    "ctaDiscord": "Join the Discord",
+    "quality": "Shop status",
+    "catalogLive": "{count} products from the bot config",
+    "catalogDemo": "Demo catalog — the bot is not connected",
+    "openShopNote": "Price and duration come straight from the bot configuration, so what you see here is what the ticket flow sells."
+  },
+  "popular": {
+    "title": "Featured",
+    "lead": "Products staff flagged as featured.",
+    "empty": "Nothing is featured right now — the full list is in the shop.",
+    "all": "See every product"
+  },
+  "why": {
+    "title": "Why buying here",
+    "lead": "The store is the front door; Discord and the bot do the delivery.",
+    "delivery": {
+      "title": "Keys arrive as a Discord DM",
+      "body": "One action stores the key, grants the product's role and DMs the key to the buyer — nobody copies keys between chats by hand."
+    },
+    "duration": {
+      "title": "Access that ends on its own",
+      "body": "Every product carries a duration. When it expires the bot removes the role; buying again extends the time you already have instead of replacing it."
+    },
+    "support": {
+      "title": "Support in the same place",
+      "body": "Missing roles, wrong accounts and payment questions are handled in the Discord server — the same place your purchase lives."
+    }
+  },
+  "stats": {
+    "products": "Products listed",
+    "delivered": "Keys delivered",
+    "members": "Discord members",
+    "reviews": "Buyer reviews"
+  },
+  "shop": {
+    "title": "Shop",
+    "lead": "Prices and durations are read from the bot's configuration. Sign in with Discord when you check out.",
+    "search": "Search a product",
+    "searchLabel": "Search products",
+    "searchCta": "Search",
+    "reset": "Reset filters",
+    "all": "All categories",
+    "showing": "{shown} of {total} products",
+    "empty": "Nothing matches \"{query}\". Try another word or pick a category.",
+    "duration": "Duration",
+    "category": "Category",
+    "buy": "Buy",
+    "detail": "Details",
+    "promo": "Promo",
+    "noRole": "No auto-role set for this product in the bot yet — staff deliver it by hand."
+  },
+  "product": {
+    "back": "Back to the shop",
+    "price": "Price",
+    "duration": "Access length",
+    "category": "Category",
+    "deliveryTitle": "How you get it",
+    "delivery1": "Pay and upload your payment proof on the order page.",
+    "delivery2": "Staff verify the payment, then release the key.",
+    "delivery3": "The bot DMs the key to your Discord account and grants the role for the length above.",
+    "buy": "Buy this product",
+    "loginNote": "You will sign in with Discord at checkout — the key is bound to that account.",
+    "notFound": "That product is not in the catalog any more.",
+    "roleNote": "Auto-role is configured for this product.",
+    "noRoleNote": "This product has no auto-role configured in the bot yet, so staff deliver the key by hand."
+  },
+  "checkout": {
+    "title": "Confirm your order",
+    "lead": "Check the details, then create the order. Payment instructions appear right after.",
+    "loginTitle": "Sign in first",
+    "loginBody": "The bot delivers the key to a Discord account, so we need to know which one. Signing in also shows your orders later.",
+    "loginCta": "Sign in with Discord",
+    "product": "Product",
+    "price": "Price",
+    "duration": "Access length",
+    "contact": "Contact (Discord tag, WhatsApp or email)",
+    "contactHint": "Only used if staff need to reach you about this order.",
+    "note": "Note for staff",
+    "noteHint": "Anything they should know — the account name, a coupon you were given, etc.",
+    "submit": "Create order",
+    "closed": "The shop is closed right now. Join the Discord and ask staff when it reopens.",
+    "paymentTitle": "Payment",
+    "gatewaySoon": "Automatic checkout (Midtrans / Tripay) is not switched on yet — orders are paid by QRIS or bank transfer and verified by staff."
+  },
+  "order": {
+    "title": "Order",
+    "ref": "Order number",
+    "createdAt": "Created",
+    "statusLabel": "Status",
+    "status": {
+      "pending": "Waiting for payment",
+      "review": "Payment proof received — waiting for staff",
+      "delivered": "Delivered",
+      "rejected": "Payment could not be verified"
+    },
+    "payTitle": "Pay and upload the proof",
+    "qrisTitle": "QRIS",
+    "qrisMissing": "Staff have not uploaded the QRIS image yet — ask them in the Discord for the payment details.",
+    "transferTitle": "Bank transfer",
+    "transferMissing": "Bank details are not filled in yet — ask staff in the Discord.",
+    "paymentNote": "Staff note on payment",
+    "uploadLabel": "Upload your payment proof",
+    "uploadHint": "Screenshot of the transfer or of the QRIS confirmation page. PNG, JPG, WebP or PDF, up to 6 MB.",
+    "uploadCta": "Send proof",
+    "uploadDone": "Proof received. Staff will verify it and release the key.",
+    "proofTitle": "Payment proof",
+    "keyTitle": "Your key",
+    "keyHint": "The bot has also sent this key to your Discord DM, and your role is active now.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "waitingTitle": "Waiting for staff",
+    "waitingBody": "Your payment proof is in. Verification usually happens inside support hours.",
+    "rejectedBody": "Staff could not verify this payment.",
+    "supportCta": "Ask in the Discord",
+    "staffNote": "Message from staff",
+    "backOrders": "All my orders",
+    "track": "Track an order"
+  },
+  "orders": {
+    "title": "My orders",
+    "lead": "Everything bought with this Discord account.",
+    "empty": "No orders yet. The shop is one click away.",
+    "browse": "Open the shop",
+    "detail": "Open order"
+  },
+  "statusPage": {
+    "title": "Track an order",
+    "lead": "Type the order number you got at checkout. The key itself stays hidden until you sign in as the buyer.",
+    "label": "Order number",
+    "submit": "Check status",
+    "notFound": "No order with that number. Check the spelling — it looks like CS-XXXXXX.",
+    "signInToSeeKey": "This order is yours? Sign in with Discord to see the key."
+  },
+  "reviews": {
+    "title": "Buyer reviews",
+    "lead": "Written by buyers from their own delivered orders — nothing is seeded here.",
+    "empty": "No reviews yet. They appear as soon as a buyer reviews a delivered order.",
+    "rating": "Rating",
+    "stars": "{rating} of 5",
+    "from": "by {name}",
+    "backToOrder": "Back to the order",
+    "formTitle": "Leave a review",
+    "formHint": "You can review this order once. It shows up on the reviews page right away.",
+    "formBody": "What did you think?",
+    "formSubmit": "Post review",
+    "formDone": "Thanks — your review is up.",
+    "formExists": "You already reviewed this order."
+  },
+  "faq": {
+    "title": "Questions we get asked",
+    "lead": "Straight answers about payment, delivery and durations.",
+    "items": [
+      {
+        "q": "How fast is the delivery?",
+        "a": "A staff member verifies your payment and releases the key, usually inside support hours. The key then arrives in your Discord DM and the product's role is granted at the same moment."
+      },
+      {
+        "q": "Do I have to be in the Discord server?",
+        "a": "Yes. The bot can only grant a role and send a key to a member of the server, so join with the Discord account you want the access on."
+      },
+      {
+        "q": "Where do I pay?",
+        "a": "Open the order after checkout. It shows the QRIS code or the bank details and a field to upload your payment proof. Staff verify from there."
+      },
+      {
+        "q": "My key never arrived.",
+        "a": "Check your Discord DMs first — Discord sometimes hides messages from bots in \"Message requests\". Then open the order page: if the status is still waiting, upload your payment proof; if it says delivered, ping staff in the server."
+      },
+      {
+        "q": "Can I use the access on another account?",
+        "a": "No. The key is bound to the Discord account that bought it — the role and the expiry timer follow that account only."
+      },
+      {
+        "q": "The product stopped working, or I paid by mistake.",
+        "a": "Say so in the Discord server within your active duration. Refunds are decided by staff case by case; the store itself never moves money back on its own."
+      }
+    ]
+  },
+  "footer": {
+    "support": "Support hours",
+    "payments": "Payment methods",
+    "community": "Community",
+    "shopLinks": "Shop",
+    "note": "Catalog and roles come from the CHRONOS bot. Orders and reviews live in this store."
+  },
+  "login": {
+    "title": "Sign in",
+    "lead": "Discord sign-in uses the identify scope only — the store never asks for your password, and never posts anything as you.",
+    "cta": "Continue with Discord",
+    "notConfigured": "Discord sign-in is not configured on this deployment yet. Set DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, SESSION_SECRET and PUBLIC_ORIGIN, then restart.",
+    "signedInAs": "Signed in as {name}",
+    "goShopping": "Go to the shop",
+    "goOrders": "My orders"
+  },
+  "admin": {
+    "title": "Staff",
+    "lead": "Orders, promo flags and shop settings. Delivery calls the bot, so the key, role, DM and expiry all happen there.",
+    "notStaff": "This page is for staff accounts only. Ask an admin to add your Discord ID to STORE_ADMIN_DISCORD_IDS.",
+    "tabOrders": "Orders",
+    "tabPromos": "Promo & featured",
+    "tabSettings": "Settings",
+    "filterAll": "All",
+    "noOrders": "No orders in this filter right now.",
+    "buyer": "Buyer",
+    "product": "Product",
+    "amount": "Amount",
+    "contact": "Contact",
+    "note": "Buyer note",
+    "proof": "Proof",
+    "noProof": "No proof uploaded",
+    "openProof": "Open proof",
+    "deliverTitle": "Release the key",
+    "keyLabel": "Key (leave empty to generate one)",
+    "keyPlaceholder": "XXXXX-XXXXX-XXXXX",
+    "generate": "Generate",
+    "deliver": "Deliver key",
+    "reject": "Reject",
+    "rejectReason": "Reason shown to the buyer",
+    "staffNoteLabel": "Internal note",
+    "saveNote": "Save note",
+    "deliveredBy": "Released by {name}",
+    "resultOk": "Key delivered — role granted, buyer DM'd, expiry scheduled.",
+    "resultPartial": "Key stored, but the bot reported a warning: {warning}",
+    "deliveryFailed": "Delivery failed: {error}",
+    "botMissing": "The bot is not connected (DASH_API_URL / DASH_API_TOKEN / CHRONOS_GUILD_ID). Delivery needs it.",
+    "promoTitle": "Promo label and featured",
+    "promoLead": "A promo label shows as an orange badge on the product. Featured products appear in the Featured block on the home page. Neither changes the price.",
+    "promoLabel": "Promo label",
+    "promoPlaceholder": "e.g. PROMO, -20%",
+    "featured": "Featured",
+    "saveProduct": "Save",
+    "settingsTitle": "Shop settings",
+    "qrisImageUrl": "QRIS image URL",
+    "qrisHint": "Public image URL (Supabase Storage or any CDN). Shown on every order that waits for payment.",
+    "paymentNote": "Extra payment note",
+    "paymentNoteHint": "Shown under the QRIS code, e.g. the account holder name.",
+    "supportHours": "Support hours",
+    "whatsappUrl": "WhatsApp link",
+    "telegramUrl": "Telegram link",
+    "discordInviteUrl": "Discord invite link",
+    "currencyLabel": "Currency label",
+    "currencyHint": "Only used for totals and stats — product prices keep exactly what the bot has.",
+    "storeOpen": "Shop open",
+    "storeOpenHint": "Closed = checkout refuses new orders.",
+    "promoBanner": "Home page promo banner",
+    "promoBannerHint": "One line at the top of the home page. Leave empty to hide it.",
+    "saveSettings": "Save settings",
+    "saved": "Saved.",
+    "statsOrders": "{count} orders",
+    "statsRevenue": "{amount} delivered"
+  },
+  "common": {
+    "backHome": "Back to home",
+    "backShop": "Back to the shop",
+    "loading": "Loading…",
+    "demoCatalog": "Demo catalog",
+    "demoCatalogBody": "DASH_API_URL and CHRONOS_GUILD_ID are not set, so the shop is showing demo products. Point them at the bot to see the real catalog.",
+    "botOnline": "Bot online · v{version}",
+    "botOffline": "Bot unreachable",
+    "signInNeeded": "Sign in with Discord to continue",
+    "close": "Close",
+    "optional": "optional",
+    "notFoundTitle": "Nothing here",
+    "notFoundBody": "That page does not exist. The shop is a good place to restart.",
+    "support": "Support"
+  }
+}

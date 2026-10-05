@@ -1,0 +1,79 @@
+-- CHRONOS Store — run this once in the Supabase SQL editor.
+-- Without these tables (or without SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)
+-- the store falls back to an in-memory store where data disappears on restart.
+
+create table if not exists orders (
+  ref text primary key,
+  guild_id text not null default '',
+  product_value text not null,
+  product_label text not null,
+  product_price text not null default '',
+  price_amount bigint not null default 0,
+  duration_days integer not null default 0,
+  buyer_discord_id text not null,
+  buyer_username text not null default '',
+  buyer_avatar text,
+  contact text not null default '',
+  note text not null default '',
+  status text not null default 'pending'
+    check (status in ('pending', 'review', 'delivered', 'rejected')),
+  payment_method text not null default 'qris'
+    check (payment_method in ('qris', 'transfer')),
+  proof_path text,
+  proof_uploaded_at timestamptz,
+  delivered_key text,
+  delivered_at timestamptz,
+  delivered_by text,
+  staff_note text,
+  events jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists orders_buyer_idx on orders (buyer_discord_id);
+create index if not exists orders_status_idx on orders (status);
+create index if not exists orders_created_idx on orders (created_at desc);
+
+create table if not exists reviews (
+  id text primary key,
+  order_ref text not null unique references orders (ref) on delete cascade,
+  product_value text not null,
+  product_label text not null default '',
+  buyer_username text not null default '',
+  rating integer not null check (rating between 1 and 5),
+  body text not null default '',
+  created_at timestamptz not null default now()
+);
+
+-- Promo badges and the "featured" flag live here because the bot has no promo
+-- field: its product shape is label / value / price / category / requiresKey /
+-- roleId / days, and the store must not pretend otherwise.
+create table if not exists product_meta (
+  product_value text primary key,
+  promo_label text,
+  featured boolean not null default false,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists settings (
+  key text primary key,
+  value jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+-- The service role key (server only) does all the writing, so no write policies
+-- are needed. Reviews are the one thing a browser may read directly.
+alter table orders enable row level security;
+alter table reviews enable row level security;
+alter table product_meta enable row level security;
+alter table settings enable row level security;
+
+drop policy if exists "reviews are readable by everyone" on reviews;
+create policy "reviews are readable by everyone" on reviews for select using (true);
+
+-- Private bucket for payment proofs; the app serves them through
+-- /api/proofs/<order ref> after checking who is asking.
+insert into storage.buckets (id, name, public)
+values ('proofs', 'proofs', false)
+on conflict (id) do nothing;
