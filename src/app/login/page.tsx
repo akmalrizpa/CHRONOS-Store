@@ -41,27 +41,36 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               </Link>
             </div>
           </>
-        ) : isAuthConfigured ? (
-          <a href={`/api/auth/login?next=${encodeURIComponent(safeNext)}`} className={`${btnPrimary} w-full sm:w-auto`}>
-            {t("login.cta")}
-          </a>
         ) : (
-          <p className="text-sm leading-relaxed text-muted">{t("login.notConfigured")}</p>
-        )}
+          <>
+            {demoMode() ? (
+              <div>
+                <p className="text-sm font-semibold">{t("demo.title")}</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted">{t("demo.body")}</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <a href="/api/auth/demo?role=staff&next=/admin" className={btnPrimary}>
+                    {t("demo.staff")}
+                  </a>
+                  <a href="/api/auth/demo?role=customer&next=/shop" className={btnOutline}>
+                    {t("demo.customer")}
+                  </a>
+                </div>
+              </div>
+            ) : null}
 
-        {demoMode() && (
-          <div className="mt-6 border-t border-line pt-5">
-            <p className="text-sm font-semibold">{t("demo.title")}</p>
-            <p className="mt-2 text-xs leading-relaxed text-muted">{t("demo.body")}</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <a href="/api/auth/demo?role=staff&next=/admin" className={btnPrimary}>
-                {t("demo.staff")}
+            {isAuthConfigured ? (
+              <a
+                href={`/api/auth/login?next=${encodeURIComponent(safeNext)}`}
+                className={`${btnPrimary} ${demoMode() ? "mt-6 border-t border-line pt-6" : ""} w-full sm:w-auto`}
+              >
+                {t("login.cta")}
               </a>
-              <a href="/api/auth/demo?role=customer&next=/shop" className={btnOutline}>
-                {t("demo.customer")}
-              </a>
-            </div>
-          </div>
+            ) : (
+              <p className={`text-sm leading-relaxed text-muted ${demoMode() ? "mt-6 border-t border-line pt-5" : ""}`}>
+                {t("login.notConfigured")}
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>

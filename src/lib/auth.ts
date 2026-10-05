@@ -131,22 +131,39 @@ export async function fetchDiscordUser(accessToken: string): Promise<StoreUser |
   };
 }
 
-function sign(payload: string): string {
-  return createHmac("sha256", SESSION_SECRET).update(payload).digest("base64url");
+/**
+ * Fallback signing key for a deployment that only runs the read-only demo
+ * (DEMO_MODE on, no Discord app and no SESSION_SECRET yet). It is public, so a
+ * cookie signed with it is forced back to `demo: true` on decode — it can never
+ * produce a real session, let alone a staff one.
+ */
+const DEMO_ONLY_SECRET = "chronos-store-demo-only-secret";
+
+function sessionKey(): string | null {
+  if (SESSION_SECRET) return SESSION_SECRET;
+  return demoMode() ? DEMO_ONLY_SECRET : null;
+}
+
+function sign(payload: string, key: string): string {
+  return createHmac("sha256", key).update(payload).digest("base64url");
 }
 
 export function encodeSession(user: StoreUser): string {
+  const key = sessionKey();
+  if (!key) throw new Error("SESSION_SECRET is not set");
+
   const payload = Buffer.from(JSON.stringify(user), "utf8").toString("base64url");
-  return `${payload}.${sign(payload)}`;
+  return `${payload}.${sign(payload, key)}`;
 }
 
 export function decodeSession(value: string | undefined): StoreUser | null {
-  if (!value || !SESSION_SECRET) return null;
+  const key = sessionKey();
+  if (!value || !key) return null;
 
   const [payload, signature] = value.split(".");
   if (!payload || !signature) return null;
 
-  const expected = sign(payload);
+  const expected = sign(payload, key);
   const given = Buffer.from(signature);
   const wanted = Buffer.from(expected);
   if (given.length !== wanted.length || !timingSafeEqual(given, wanted)) return null;
@@ -154,6 +171,8 @@ export function decodeSession(value: string | undefined): StoreUser | null {
   try {
     const user = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as StoreUser;
     if (!user?.id) return null;
+    // No real secret configured: this can only ever be the demo.
+    if (!SESSION_SECRET) return { ...user, demo: true };
     return user;
   } catch {
     return null;
