@@ -37,11 +37,31 @@ and "Cheat X — 30 days" are two products in the bot.
 
 | Page | What it does |
 | --- | --- |
-| `/admin` | counts per status, delivered value, product/customer/review totals, latest orders, bot connection |
+| `/admin` | counts per status, delivered value, product/customer/review totals, latest orders, latest activity, bot connection |
 | `/admin/orders` | payment proofs, one-click key release, reject with a reason, internal notes |
 | `/admin/products` | one container per product: edit name/price/category/duration/auto-role/promo/featured, delete (two-step), plus full category CRUD |
+| `/admin/stats` | the bot's own counters (messages, purchases, revenue, giveaways won, keys on record, boosters, level leaderboard) next to store numbers (orders per status, revenue, average order, best selling products, top buyers) and a 14-day bar list |
+| `/admin/log` | every write in the store with actor, target and detail — filterable by order / product / category / customer / settings / review / login |
 | `/admin/customers` | everyone who signed in, with order count and spend, and promote/demote to admin |
 | `/admin/settings` | QRIS image, payment note, support hours, contact links, promo banner, shop open/closed |
+
+## Demo login
+
+Set `DEMO_MODE=true` and `/login` grows two buttons: **Demo as staff** and **Demo as buyer**.
+A demo session needs no Discord account, can browse the whole admin area — statistics, log,
+orders, products — and is refused by every write action, so it can be shown to a customer or
+a friend without handing out any power. It expires after 3 hours and the header keeps a
+"read only" reminder on screen. When the bot is not connected, the statistics page shows a
+clearly labelled sample set instead of zeros.
+
+## Activity log
+
+Every write goes through `logActivity()`: logins, order creation, payment proofs, key
+releases, rejects, internal notes, product/category changes, role changes, settings saves and
+reviews. Rows land in the Supabase table `activity_log` (run `supabase/schema.sql` again) and
+are readable at `/admin/log`, with the six newest also on the dashboard. Without Supabase the
+log lives in memory and clears on restart.
+
 
 Products and categories go to the bot; promo, featured, settings and customers stay in
 Supabase. Role and category pickers read the real Discord guild through `GET /guilds/:id/meta`,

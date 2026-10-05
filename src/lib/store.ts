@@ -1,6 +1,8 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { DEFAULT_SETTINGS } from "@/data/shop";
 import type {
+  ActivityAction,
+  ActivityEntry,
   Customer,
   CustomerRole,
   Order,
@@ -45,6 +47,7 @@ type Memory = {
   settings: Partial<StoreSettings>;
   proofs: Map<string, { bytes: ArrayBuffer; contentType: string }>;
   customers: Map<string, Customer>;
+  activity: ActivityEntry[];
 };
 
 const globalForStore = globalThis as unknown as { __chronosStore?: Memory };
@@ -58,6 +61,7 @@ function memory(): Memory {
       settings: {},
       proofs: new Map(),
       customers: new Map(),
+      activity: [],
     };
   }
   return globalForStore.__chronosStore;
@@ -488,6 +492,106 @@ export async function countCustomers(): Promise<number> {
   if (!hasDatabase) return memory().customers.size;
 
   const { count } = await db().from("customers").select("discord_id", { count: "exact", head: true });
+  return count ?? 0;
+}
+
+/* ------------------------------- activity log ------------------------------ */
+
+type ActivityRow = {
+  id: string;
+  at: string;
+  actor_id: string;
+  actor_name: string;
+  action: string;
+  target: string;
+  detail: string;
+};
+
+function toActivity(row: ActivityRow): ActivityEntry {
+  return {
+    id: row.id,
+    at: row.at,
+    actorId: row.actor_id,
+    actorName: row.actor_name,
+    action: row.action as ActivityAction,
+    target: row.target,
+    detail: row.detail,
+  };
+}
+
+/**
+ * Records one admin/buyer action. Never throws: an audit row must not be able to
+ * break the action it is describing.
+ */
+export async function logActivity(entry: {
+  actorId: string;
+  actorName: string;
+  action: ActivityAction;
+  target?: string;
+  detail?: string;
+}): Promise<void> {
+  const row: ActivityEntry = {
+    id: `act_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+    at: new Date().toISOString(),
+    actorId: entry.actorId,
+    actorName: entry.actorName,
+    action: entry.action,
+    target: entry.target ?? "",
+    detail: entry.detail ?? "",
+  };
+
+  try {
+    if (!hasDatabase) {
+      const store = memory();
+      store.activity.unshift(row);
+      if (store.activity.length > 500) store.activity.length = 500;
+      return;
+    }
+
+    await db().from("activity_log").insert({
+      id: row.id,
+      at: row.at,
+      actor_id: row.actorId,
+      actor_name: row.actorName,
+      action: row.action,
+      target: row.target,
+      detail: row.detail,
+    });
+  } catch {
+    // Best effort — the action itself already happened.
+  }
+}
+
+export async function listActivity(options?: {
+  limit?: number;
+  action?: string;
+  actorId?: string;
+}): Promise<ActivityEntry[]> {
+  const limit = options?.limit ?? 100;
+
+  if (!hasDatabase) {
+    return memory()
+      .activity.filter(
+        (entry) =>
+          (!options?.action || entry.action === options.action) &&
+          (!options?.actorId || entry.actorId === options.actorId),
+      )
+      .slice(0, limit);
+  }
+
+  let query = db().from("activity_log").select("*").order("at", { ascending: false }).limit(limit);
+  if (options?.action) query = query.eq("action", options.action);
+  if (options?.actorId) query = query.eq("actor_id", options.actorId);
+
+  const { data, error } = await query;
+  if (error || !data) return [];
+  return (data as ActivityRow[]).map(toActivity);
+}
+
+export async function countActivity(): Promise<number> {
+  if (!hasDatabase) return memory().activity.length;
+
+  const { count } = await db().from("activity_log").select("id", { count: "exact", head: true });
   return count ?? 0;
 }
 

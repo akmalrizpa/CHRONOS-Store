@@ -1,4 +1,13 @@
-import type { BotCategory, BotGuild, BotHealth, BotProduct } from "./types";
+import type {
+  BotBoostEvent,
+  BotBooster,
+  BotCategory,
+  BotGuild,
+  BotHealth,
+  BotLevelUser,
+  BotProduct,
+  BotStats,
+} from "./types";
 
 /**
  * Server-only client for the bot's DASH API (src/infra/dashServer.js in
@@ -58,6 +67,20 @@ export type DashboardPayload = {
     products?: BotProduct[];
     ticketCategories?: BotCategory[];
   };
+  stats?: BotStats;
+  levelTop?: BotLevelUser[];
+  boosters?: { count: number; level: number; history: BotBoostEvent[]; list: BotBooster[] };
+  keys?: {
+    id: string;
+    userId: string;
+    username: string | null;
+    productName: string | null;
+    expiresAt: number | null;
+    days: number | null;
+    createdAt: number | null;
+  }[];
+  warns?: { userId: string; count?: number; warns?: number }[];
+  giveaways?: { id: string; prize: string; endsAt: number | null; ended: boolean }[];
 };
 
 export function fetchDashboard() {

@@ -37,6 +37,7 @@ export default async function AdminCustomersPage({
   return (
     <div className="space-y-6">
       {params.result === "self" && <p className={`${badgeDanger} px-3 py-2 text-sm`}>{t("admin.custSelf")}</p>}
+      {params.result === "demo" && <p className={`${badgeDanger} px-3 py-2 text-sm`}>{t("demo.readOnly")}</p>}
       {params.result === "role" && <p className={`${badgeOk} px-3 py-2 text-sm`}>{t("admin.saved")}</p>}
 
       {!hasDatabase && <p className={`${badgeDanger} px-3 py-2 text-sm`}>{t("admin.custNoDb")}</p>}

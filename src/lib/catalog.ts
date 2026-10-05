@@ -122,6 +122,27 @@ export function clearCatalogCache() {
   cache = null;
 }
 
+let dashboardCache: { at: number; value: Awaited<ReturnType<typeof fetchDashboard>> } | null = null;
+const DASHBOARD_TTL_MS = 20_000;
+
+/**
+ * The raw bot payload (stats, boosters, keys, levels…). Cached briefly so
+ * clicking between admin pages does not fire one request per render.
+ */
+export async function getBotDashboard(options?: { fresh?: boolean }) {
+  if (!options?.fresh && dashboardCache && Date.now() - dashboardCache.at < DASHBOARD_TTL_MS) {
+    return dashboardCache.value;
+  }
+
+  const value = await fetchDashboard();
+  dashboardCache = { at: Date.now(), value };
+  return value;
+}
+
+export function clearDashboardCache() {
+  dashboardCache = null;
+}
+
 let healthCache: { at: number; value: BotHealth | null } | null = null;
 const HEALTH_TTL_MS = 30_000;
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSession, isAuthConfigured } from "@/lib/auth";
+import { demoMode, getSession, isAuthConfigured } from "@/lib/auth";
 import { getLocale } from "@/lib/locale";
 import { createTranslator } from "@/i18n/dictionary";
 import { btnOutline, btnPrimary, pageTop, panel, sectionLead, sectionTitle } from "@/components/ui";
@@ -47,6 +47,21 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </a>
         ) : (
           <p className="text-sm leading-relaxed text-muted">{t("login.notConfigured")}</p>
+        )}
+
+        {demoMode() && (
+          <div className="mt-6 border-t border-line pt-5">
+            <p className="text-sm font-semibold">{t("demo.title")}</p>
+            <p className="mt-2 text-xs leading-relaxed text-muted">{t("demo.body")}</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a href="/api/auth/demo?role=staff&next=/admin" className={btnPrimary}>
+                {t("demo.staff")}
+              </a>
+              <a href="/api/auth/demo?role=customer&next=/shop" className={btnOutline}>
+                {t("demo.customer")}
+              </a>
+            </div>
+          </div>
         )}
       </div>
     </div>

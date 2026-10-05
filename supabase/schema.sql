@@ -62,6 +62,22 @@ create table if not exists customers (
 create index if not exists customers_role_idx on customers (role);
 create index if not exists customers_seen_idx on customers (last_seen desc);
 
+-- Every write that happens in the store: who did what, to which order/product.
+-- This is the audit trail the admin area reads at /admin/log.
+create table if not exists activity_log (
+  id text primary key,
+  at timestamptz not null default now(),
+  actor_id text not null default '',
+  actor_name text not null default '',
+  action text not null,
+  target text not null default '',
+  detail text not null default ''
+);
+
+create index if not exists activity_at_idx on activity_log (at desc);
+create index if not exists activity_actor_idx on activity_log (actor_id);
+create index if not exists activity_action_idx on activity_log (action);
+
 -- Promo badges and the "featured" flag live here because the bot has no promo
 -- field: its product shape is label / value / price / category / requiresKey /
 -- roleId / days, and the store must not pretend otherwise.
@@ -86,6 +102,7 @@ alter table reviews enable row level security;
 alter table product_meta enable row level security;
 alter table settings enable row level security;
 alter table customers enable row level security;
+alter table activity_log enable row level security;
 
 drop policy if exists "reviews are readable by everyone" on reviews;
 create policy "reviews are readable by everyone" on reviews for select using (true);

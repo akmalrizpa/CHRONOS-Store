@@ -38,12 +38,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <p className="font-mono text-xs text-muted">{t("admin.signedInAs", { name: staff.displayName })}</p>
       </div>
 
+      {staff.demo && (
+        <p className="mt-5 rounded-card border border-accent/40 bg-accent-soft px-4 py-3 text-xs leading-relaxed text-accent sm:text-sm">
+          {t("demo.staffBanner")}
+        </p>
+      )}
+
       <div className="mt-8">
         <AdminNav
           items={[
             { href: "/admin", label: t("admin.navDashboard") },
             { href: "/admin/orders", label: t("admin.navOrders"), badge: pending },
             { href: "/admin/products", label: t("admin.navProducts") },
+            { href: "/admin/stats", label: t("admin.navStats") },
+            { href: "/admin/log", label: t("admin.navLog") },
             { href: "/admin/customers", label: t("admin.navCustomers") },
             { href: "/admin/settings", label: t("admin.navSettings") },
           ]}

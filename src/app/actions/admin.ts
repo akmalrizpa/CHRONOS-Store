@@ -2,8 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getStaffSession } from "@/lib/auth";
-import { clearCatalogCache } from "@/lib/catalog";
+import { getStaffSession, isDemoUser } from "@/lib/auth";
+import { clearCatalogCache, clearDashboardCache } from "@/lib/catalog";
 import {
   createCategory,
   createProduct,
@@ -12,7 +12,7 @@ import {
   updateCategory,
   updateProduct,
 } from "@/lib/bot";
-import { deleteProductMeta, saveProductMeta, saveSettings, setCustomerRole } from "@/lib/store";
+import { deleteProductMeta, logActivity, saveProductMeta, saveSettings, setCustomerRole } from "@/lib/store";
 import type { CustomerRole, StoreSettings } from "@/lib/types";
 
 function text(formData: FormData, key: string, max = 200): string {
@@ -41,20 +41,28 @@ function go(path: string, params: Record<string, string | undefined> = {}): neve
   redirect(query ? `${path}?${query}` : path);
 }
 
+function refreshCatalog() {
+  clearCatalogCache();
+  clearDashboardCache();
+  revalidatePath("/", "layout");
+}
+
 export async function createProductAction(formData: FormData) {
   const staff = await getStaffSession();
   if (!staff) redirect("/login?next=/admin/products");
 
   const label = text(formData, "label", 80);
   if (!label) go("/admin/products", { result: "nolabel" });
+  if (isDemoUser(staff)) go("/admin/products", { result: "demo" });
 
   const value = text(formData, "value", 50) || slugify(label);
   const roleId = text(formData, "roleId", 30);
+  const price = text(formData, "price", 60);
 
   const result = await createProduct({
     label,
     value,
-    price: text(formData, "price", 60),
+    price,
     category: text(formData, "category", 30),
     requiresKey: formData.get("requiresKey") === "on",
     roleId: roleId || undefined,
@@ -68,9 +76,15 @@ export async function createProductAction(formData: FormData) {
     promoLabel: text(formData, "promoLabel", 24) || null,
     featured: formData.get("featured") === "on",
   });
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "product.created",
+    target: value,
+    detail: `${label} · ${price}${roleId ? ` · role ${roleId} · ${number(formData, "days")}d` : ""}`,
+  });
 
-  clearCatalogCache();
-  revalidatePath("/", "layout");
+  refreshCatalog();
   go("/admin/products", { result: "created", value });
 }
 
@@ -80,12 +94,15 @@ export async function updateProductAction(formData: FormData) {
 
   const value = text(formData, "value", 50);
   if (!value) go("/admin/products", { result: "missing" });
+  if (isDemoUser(staff)) go("/admin/products", { result: "demo" });
 
   const roleId = text(formData, "roleId", 30);
+  const label = text(formData, "label", 80);
+  const price = text(formData, "price", 60);
 
   const result = await updateProduct(value, {
-    label: text(formData, "label", 80),
-    price: text(formData, "price", 60),
+    label,
+    price,
     category: text(formData, "category", 30),
     requiresKey: formData.get("requiresKey") === "on",
     // An empty roleId is how the bot clears the auto-role + duration.
@@ -100,9 +117,15 @@ export async function updateProductAction(formData: FormData) {
     promoLabel: text(formData, "promoLabel", 24) || null,
     featured: formData.get("featured") === "on",
   });
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "product.updated",
+    target: value,
+    detail: `${label} · ${price}${roleId ? ` · role ${roleId} · ${number(formData, "days")}d` : " · no auto-role"}`,
+  });
 
-  clearCatalogCache();
-  revalidatePath("/", "layout");
+  refreshCatalog();
   go("/admin/products", { result: "updated", value });
 }
 
@@ -112,13 +135,21 @@ export async function deleteProductAction(formData: FormData) {
 
   const value = text(formData, "value", 50);
   if (!value) go("/admin/products", { result: "missing" });
+  if (isDemoUser(staff)) go("/admin/products", { result: "demo" });
 
   const result = await deleteProduct(value, staff.id);
   if (!result.ok) go("/admin/products", { result: "failed", value, error: result.error });
 
   await deleteProductMeta(value);
-  clearCatalogCache();
-  revalidatePath("/", "layout");
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "product.deleted",
+    target: value,
+    detail: text(formData, "label", 80),
+  });
+
+  refreshCatalog();
   go("/admin/products", { result: "deleted", value });
 }
 
@@ -128,10 +159,13 @@ export async function createCategoryAction(formData: FormData) {
 
   const label = text(formData, "label", 80);
   if (!label) go("/admin/products", { result: "nolabel", tab: "categories" });
+  if (isDemoUser(staff)) go("/admin/products", { result: "demo", tab: "categories" });
+
+  const id = text(formData, "id", 30) || slugify(label).slice(0, 30);
 
   const result = await createCategory({
     label,
-    id: text(formData, "id", 30) || slugify(label).slice(0, 30),
+    id,
     emoji: text(formData, "emoji", 40),
     style: text(formData, "style", 12) || "Primary",
     requiresKey: formData.get("requiresKey") === "on",
@@ -140,8 +174,15 @@ export async function createCategoryAction(formData: FormData) {
 
   if (!result.ok) go("/admin/products", { result: "failed", tab: "categories", error: result.error });
 
-  clearCatalogCache();
-  revalidatePath("/", "layout");
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "category.created",
+    target: id,
+    detail: label,
+  });
+
+  refreshCatalog();
   go("/admin/products", { result: "categoryCreated", tab: "categories" });
 }
 
@@ -151,6 +192,7 @@ export async function updateCategoryAction(formData: FormData) {
 
   const id = text(formData, "id", 30);
   if (!id) go("/admin/products", { result: "missing", tab: "categories" });
+  if (isDemoUser(staff)) go("/admin/products", { result: "demo", tab: "categories" });
 
   const result = await updateCategory(id, {
     label: text(formData, "label", 80),
@@ -162,8 +204,15 @@ export async function updateCategoryAction(formData: FormData) {
 
   if (!result.ok) go("/admin/products", { result: "failed", tab: "categories", error: result.error });
 
-  clearCatalogCache();
-  revalidatePath("/", "layout");
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "category.updated",
+    target: id,
+    detail: text(formData, "label", 80),
+  });
+
+  refreshCatalog();
   go("/admin/products", { result: "categoryUpdated", tab: "categories" });
 }
 
@@ -173,12 +222,20 @@ export async function deleteCategoryAction(formData: FormData) {
 
   const id = text(formData, "id", 30);
   if (!id) go("/admin/products", { result: "missing", tab: "categories" });
+  if (isDemoUser(staff)) go("/admin/products", { result: "demo", tab: "categories" });
 
   const result = await deleteCategory(id, staff.id);
   if (!result.ok) go("/admin/products", { result: "failed", tab: "categories", error: result.error });
 
-  clearCatalogCache();
-  revalidatePath("/", "layout");
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "category.deleted",
+    target: id,
+    detail: `${result.data.migratedCount ?? 0} products moved to the default category`,
+  });
+
+  refreshCatalog();
   go("/admin/products", { result: "categoryDeleted", tab: "categories" });
 }
 
@@ -191,8 +248,17 @@ export async function setCustomerRoleAction(formData: FormData) {
 
   if (!discordId) go("/admin/customers", { result: "missing" });
   if (discordId === staff.id && role === "customer") go("/admin/customers", { result: "self" });
+  if (isDemoUser(staff)) go("/admin/customers", { result: "demo" });
 
   await setCustomerRole(discordId, role);
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "customer.role",
+    target: discordId,
+    detail: role,
+  });
+
   revalidatePath("/admin/customers");
   go("/admin/customers", { result: "role" });
 }
@@ -200,6 +266,7 @@ export async function setCustomerRoleAction(formData: FormData) {
 export async function saveSettingsAction(formData: FormData) {
   const staff = await getStaffSession();
   if (!staff) redirect("/login?next=/admin/settings");
+  if (isDemoUser(staff)) go("/admin/settings", { result: "demo" });
 
   const patch: Partial<StoreSettings> = {
     qrisImageUrl: text(formData, "qrisImageUrl", 500),
@@ -214,6 +281,14 @@ export async function saveSettingsAction(formData: FormData) {
   };
 
   await saveSettings(patch);
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "settings.saved",
+    target: "shop",
+    detail: `store ${patch.storeOpen ? "open" : "closed"}`,
+  });
+
   revalidatePath("/", "layout");
   go("/admin/settings", { saved: "1" });
 }

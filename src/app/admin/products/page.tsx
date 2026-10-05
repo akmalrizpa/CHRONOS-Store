@@ -41,6 +41,7 @@ const RESULT_KEYS: Record<string, string> = {
   categoryDeleted: "admin.catDeleted",
   nolabel: "admin.prodNoLabel",
   missing: "admin.prodMissing",
+  demo: "demo.readOnly",
 };
 
 export default async function AdminProductsPage({

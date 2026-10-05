@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { getSession } from "@/lib/auth";
 import { getLocale } from "@/lib/locale";
 import { createTranslator } from "@/i18n/dictionary";
 import "./globals.css";
@@ -28,6 +29,7 @@ export const viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   const { t } = createTranslator(locale);
+  const user = await getSession();
 
   return (
     <html lang={locale}>
@@ -38,6 +40,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           {t("nav.shop")}
         </a>
+        {user?.demo && (
+          <div className="border-b border-accent/40 bg-accent-soft">
+            <p className="mx-auto w-full max-w-6xl px-5 py-2 text-xs text-accent sm:text-sm">{t("demo.banner")}</p>
+          </div>
+        )}
         <Header locale={locale} />
         <main id="content" className="flex-1">
           {children}

@@ -2,11 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession, getStaffSession } from "@/lib/auth";
+import { getSession, getStaffSession, isDemoUser } from "@/lib/auth";
 import { getCatalog } from "@/lib/catalog";
 import { createOrderRef, generateKey } from "@/lib/ids";
 import { deliverKey, isBotConfigured } from "@/lib/bot";
-import { getOrder, getSettings, insertOrder, orderEvent, saveProof, updateOrder } from "@/lib/store";
+import { getOrder, getSettings, insertOrder, logActivity, orderEvent, saveProof, updateOrder } from "@/lib/store";
 import { parsePrice } from "@/lib/price";
 import type { Order } from "@/lib/types";
 
@@ -16,6 +16,7 @@ export async function createOrderAction(formData: FormData) {
   const checkoutPath = `/checkout/${encodeURIComponent(productValue)}`;
 
   if (!user) redirect(`/login?next=${encodeURIComponent(checkoutPath)}`);
+  if (isDemoUser(user)) redirect(`${checkoutPath}?error=demo`);
 
   const settings = await getSettings();
   if (!settings.storeOpen) redirect(`${checkoutPath}?error=closed`);
@@ -56,7 +57,16 @@ export async function createOrderAction(formData: FormData) {
   // The ref is random — a collision is unlikely, but the primary key would reject it.
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const created = await insertOrder(attempt === 0 ? draft : { ...draft, ref: createOrderRef() });
-    if (created.ok) redirect(`/orders/${created.order.ref}?created=1`);
+    if (created.ok) {
+      await logActivity({
+        actorId: user.id,
+        actorName: user.username,
+        action: "order.created",
+        target: created.order.ref,
+        detail: `${product.label} · ${product.price}`,
+      });
+      redirect(`/orders/${created.order.ref}?created=1`);
+    }
   }
 
   redirect(`${checkoutPath}?error=failed`);
@@ -68,6 +78,7 @@ export async function uploadProofAction(formData: FormData) {
   const orderPath = `/orders/${encodeURIComponent(ref)}`;
 
   if (!user) redirect(`/login?next=${encodeURIComponent(orderPath)}`);
+  if (isDemoUser(user)) redirect(`${orderPath}?upload=demo`);
 
   const file = formData.get("proof");
   if (!(file instanceof File) || file.size === 0) {
@@ -88,6 +99,14 @@ export async function uploadProofAction(formData: FormData) {
     events: [...order.events, orderEvent("Payment proof uploaded", user.username)],
   });
 
+  await logActivity({
+    actorId: user.id,
+    actorName: user.username,
+    action: "order.proof",
+    target: ref,
+    detail: file.type,
+  });
+
   revalidatePath(orderPath);
   redirect(`${orderPath}?upload=ok`);
 }
@@ -98,6 +117,7 @@ export async function deliverOrderAction(formData: FormData) {
   const adminPath = `/admin/orders?ref=${encodeURIComponent(ref)}`;
 
   if (!staff) redirect("/login?next=/admin/orders");
+  if (isDemoUser(staff)) redirect(`${adminPath}&result=demo`);
   if (!isBotConfigured) redirect(`${adminPath}&result=bot`);
 
   const order = await getOrder(ref);
@@ -126,6 +146,14 @@ export async function deliverOrderAction(formData: FormData) {
     events: [...order.events, orderEvent("Key released", staff.displayName)],
   });
 
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "order.delivered",
+    target: ref,
+    detail: `${order.productLabel} · ${order.buyerUsername} · key ${typedKey ? "typed" : "generated"}`,
+  });
+
   revalidatePath("/admin");
   revalidatePath(`/orders/${ref}`);
 
@@ -142,6 +170,7 @@ export async function rejectOrderAction(formData: FormData) {
   const adminPath = `/admin/orders?ref=${encodeURIComponent(ref)}`;
 
   if (!staff) redirect("/login?next=/admin/orders");
+  if (isDemoUser(staff)) redirect(`${adminPath}&result=demo`);
 
   const order = await getOrder(ref);
   if (!order) redirect(`${adminPath}&result=missing`);
@@ -150,6 +179,14 @@ export async function rejectOrderAction(formData: FormData) {
     status: "rejected",
     staffNote: reason || order.staffNote,
     events: [...order.events, orderEvent("Payment rejected", staff.displayName)],
+  });
+
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "order.rejected",
+    target: ref,
+    detail: reason || "no reason given",
   });
 
   revalidatePath("/admin");
@@ -164,11 +201,19 @@ export async function saveStaffNoteAction(formData: FormData) {
   const adminPath = `/admin/orders?ref=${encodeURIComponent(ref)}`;
 
   if (!staff) redirect("/login?next=/admin/orders");
+  if (isDemoUser(staff)) redirect(`${adminPath}&result=demo`);
 
   const order = await getOrder(ref);
   if (!order) redirect(`${adminPath}&result=missing`);
 
   await updateOrder(ref, { staffNote: note });
+  await logActivity({
+    actorId: staff.id,
+    actorName: staff.displayName,
+    action: "order.note",
+    target: ref,
+    detail: note.slice(0, 120),
+  });
   revalidatePath("/admin");
   redirect(`${adminPath}&result=saved`);
 }

@@ -44,6 +44,7 @@ export default async function AdminOrdersPage({
   if (params.result === "missing") messages.push({ kind: "danger", text: t("common.notFoundBody") });
   if (params.result === "rejected") messages.push({ kind: "ok", text: t("order.status.rejected") });
   if (params.result === "saved") messages.push({ kind: "ok", text: t("admin.saved") });
+  if (params.result === "demo") messages.push({ kind: "danger", text: t("demo.readOnly") });
 
   return (
     <div>

@@ -7,6 +7,7 @@ import {
   countOrders,
   countReviews,
   getSettings,
+  listActivity,
   listOrders,
   sumRevenue,
 } from "@/lib/store";
@@ -36,6 +37,7 @@ export default async function AdminDashboard() {
     ]);
 
   const recent = await listOrders({ limit: 6 });
+  const activity = await listActivity({ limit: 6 });
   const number = (value: number) => value.toLocaleString(locale === "id" ? "id-ID" : "en-US");
 
   const stats = [
@@ -143,6 +145,42 @@ export default async function AdminDashboard() {
                 {t("nav.shop")}
               </Link>
             </div>
+          </div>
+
+          <div className={panel}>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4">
+              <h2 className="text-base font-semibold">{t("admin.recentActivity")}</h2>
+              <Link href="/admin/log" className="font-mono text-xs text-accent transition hover:text-accent-dark">
+                {t("admin.viewAll")}
+              </Link>
+            </div>
+
+            {activity.length === 0 ? (
+              <p className="px-5 py-8 text-center text-sm text-muted">{t("admin.logEmpty")}</p>
+            ) : (
+              <ul className="divide-y divide-line">
+                {activity.map((entry) => (
+                  <li key={entry.id} className="px-5 py-3">
+                    <p className="font-mono text-xs text-muted">
+                      {new Date(entry.at).toLocaleString(locale === "id" ? "id-ID" : "en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <p className="mt-1 text-sm">
+                      <span className="font-mono text-xs text-accent">{entry.action}</span>{" "}
+                      <span className="font-mono text-xs text-muted">{entry.target}</span>
+                    </p>
+                    <p className="mt-0.5 text-xs text-muted">
+                      {entry.detail ? `${entry.detail} · ` : ""}
+                      {entry.actorName}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </section>

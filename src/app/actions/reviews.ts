@@ -2,9 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/auth";
+import { getSession, isDemoUser } from "@/lib/auth";
 import { createId } from "@/lib/ids";
-import { getOrder, getReviewByOrder, insertReview } from "@/lib/store";
+import { getOrder, getReviewByOrder, insertReview, logActivity } from "@/lib/store";
 
 export async function submitReviewAction(formData: FormData) {
   const user = await getSession();
@@ -12,6 +12,7 @@ export async function submitReviewAction(formData: FormData) {
   const orderPath = `/orders/${encodeURIComponent(ref)}`;
 
   if (!user) redirect(`/login?next=${encodeURIComponent(orderPath)}`);
+  if (isDemoUser(user)) redirect(`${orderPath}?review=demo`);
 
   const order = await getOrder(ref);
   if (!order || order.buyerDiscordId !== user.id) redirect(`${orderPath}?review=denied`);
@@ -36,5 +37,16 @@ export async function submitReviewAction(formData: FormData) {
 
   revalidatePath("/reviews");
   revalidatePath(orderPath);
+
+  if (result.ok) {
+    await logActivity({
+      actorId: user.id,
+      actorName: user.username,
+      action: "review.created",
+      target: ref,
+      detail: `${rating}/5`,
+    });
+  }
+
   redirect(`${orderPath}?review=${result.ok ? "ok" : "exists"}`);
 }

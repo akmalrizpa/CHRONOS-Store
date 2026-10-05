@@ -30,6 +30,25 @@ export function isEnvStaff(userId: string | null | undefined): boolean {
   return Boolean(userId) && STAFF_IDS.includes(String(userId));
 }
 
+/** Demo login (DEMO_MODE=true) — read-only, so it can be shown to anyone. */
+export const DEMO_STAFF_ID = "demo-staff";
+export const DEMO_CUSTOMER_ID = "demo-buyer";
+export const DEMO_MAX_AGE = 60 * 60 * 3;
+
+export function demoMode(): boolean {
+  return process.env.DEMO_MODE === "true";
+}
+
+export function demoUser(role: "staff" | "customer"): StoreUser {
+  return role === "staff"
+    ? { id: DEMO_STAFF_ID, username: "demo.staff", displayName: "Demo staff", avatarUrl: null, demo: true }
+    : { id: DEMO_CUSTOMER_ID, username: "demo.buyer", displayName: "Demo buyer", avatarUrl: null, demo: true };
+}
+
+export function isDemoUser(user: StoreUser | null | undefined): boolean {
+  return Boolean(user?.demo);
+}
+
 /**
  * Staff = the env list OR role 'admin' on the customer row (set from
  * /admin/customers). The env list is checked first so a fresh deployment —
@@ -37,6 +56,7 @@ export function isEnvStaff(userId: string | null | undefined): boolean {
  */
 export async function isStaffUser(userId: string | null | undefined): Promise<boolean> {
   if (!userId) return false;
+  if (demoMode() && userId === DEMO_STAFF_ID) return true;
   if (isEnvStaff(userId)) return true;
   const customer = await getCustomer(String(userId));
   return customer?.role === "admin";

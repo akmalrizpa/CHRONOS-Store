@@ -2,11 +2,15 @@ import { saveSettingsAction } from "@/app/actions/admin";
 import { getLocale } from "@/lib/locale";
 import { createTranslator } from "@/i18n/dictionary";
 import { getSettings } from "@/lib/store";
-import { badgeOk, btnPrimary, field, label, panel } from "@/components/ui";
+import { badgeDanger, badgeOk, btnPrimary, field, label, panel } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminSettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {
+export default async function AdminSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string; result?: string }>;
+}) {
   const params = await searchParams;
   const locale = await getLocale();
   const { t } = createTranslator(locale);
@@ -30,6 +34,9 @@ export default async function AdminSettingsPage({ searchParams }: { searchParams
         <p className="mt-2 text-xs leading-relaxed text-muted">{t("admin.settingsLead")}</p>
 
         {params.saved === "1" && <p className={`${badgeOk} mt-4 px-3 py-2 text-sm`}>{t("admin.saved")}</p>}
+        {params.result === "demo" && (
+          <p className={`${badgeDanger} mt-4 px-3 py-2 text-sm`}>{t("demo.readOnly")}</p>
+        )}
 
         <div className="mt-6 space-y-6">
           {textFields.map((item) => (

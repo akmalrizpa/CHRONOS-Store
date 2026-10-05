@@ -123,4 +123,66 @@ export type StoreUser = {
   username: string;
   displayName: string;
   avatarUrl: string | null;
+  /** Read-only demo session (DEMO_MODE) — every write action refuses it. */
+  demo?: boolean;
+};
+
+/* --------------------------- bot statistics payload -------------------------- */
+
+export type BotTopUser = { userId: string; value: number; tag?: string | null; username?: string | null };
+
+export type BotStats = {
+  server: {
+    totalUsers: number;
+    totalMessages: number;
+    totalPurchases: number;
+    totalRevenue: number;
+    totalGiveawaysWon: number;
+  };
+  top: {
+    messages: BotTopUser[];
+    vipPurchases: BotTopUser[];
+    totalSpent: BotTopUser[];
+    giveawaysWon: BotTopUser[];
+  };
+};
+
+export type BotBooster = {
+  userId: string;
+  tag: string | null;
+  displayName: string | null;
+  premiumSince: number | null;
+};
+
+export type BotBoostEvent = { userId: string; event: string; at: number | null; boostedAt: number | null };
+
+export type BotLevelUser = { userId: string; level: number; xp: number; totalXp: number };
+
+/* -------------------------------- activity log ------------------------------- */
+
+export type ActivityAction =
+  | "login"
+  | "order.created"
+  | "order.proof"
+  | "order.delivered"
+  | "order.rejected"
+  | "order.note"
+  | "product.created"
+  | "product.updated"
+  | "product.deleted"
+  | "category.created"
+  | "category.updated"
+  | "category.deleted"
+  | "customer.role"
+  | "settings.saved"
+  | "review.created";
+
+export type ActivityEntry = {
+  id: string;
+  at: string;
+  actorId: string;
+  actorName: string;
+  action: ActivityAction;
+  target: string;
+  detail: string;
 };
